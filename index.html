@@ -9,7 +9,7 @@
 <body style="margin:0">
 	<div id="container" style="width: 800px;height: 500px;position: relative;">
 		<svg id="mySVG" viewBox="0 0 800 500" style="background: black;width: 800px;height: 500px;">
-			<image  onmouseup='endSelection(evt)' onmousedown='startSelection(evt)' x="0" y="0" xlink:href="./nirc.jpg"  width="800" height="500"/>
+			<image id="image"  onmouseup='endSelection(evt)' onmousedown='startSelection(evt)' x="0" y="0" xlink:href="./nirc.jpg"  width="800" height="500"/>
 			<script type="text/ecmascript">
 				// global value
 				let rect = null; // box
@@ -19,6 +19,7 @@
 				let wid = null; // stuff width
 				let hei = null; // stuff height
 				let infoArr = [];
+				let image = document.getElementById('image');
 	
 				function endSelection(evt) {
 					endPoint = getPoint(evt);
@@ -31,18 +32,21 @@
 
 					// width less than 5 or hei less than 5, ignore
 					if((wid >= 0 && wid < 5) || (hei >= 0 && hei < 5)){
+						clearBoxAndInput(evt);
 						return
 					}
 
 					if(wid > 0 || hei > 0){
 						// set box width and height
-						rect.setAttribute ('x', startPoint.x);
-						rect.setAttribute ('y', startPoint.y);
+						const box_x = startPoint.x + parseInt(image.getAttribute('x'));
+						const box_y = startPoint.y + parseInt(image.getAttribute('y'));
+						rect.setAttribute ('x', box_x);
+						rect.setAttribute ('y', box_y);
 						rect.setAttribute ('width', wid);
 						rect.setAttribute ('height', hei);
 
-						input.style.left = startPoint.x + 'px';
-						input.style.top = (startPoint.y + hei) + 'px';
+						input.style.left = box_x + 'px';
+						input.style.top = (box_y + hei + 3) + 'px';
 						input.style.display = 'block';
 					}else if(wid < 0 || hei < 0){
 						// set box width and height
@@ -99,7 +103,7 @@
 								w: wid,
 								h: hei
 							});
-							
+							clearBoxAndInput(evt);
 							console.log('info', infoArr);
 							
 						} 
@@ -119,6 +123,7 @@
 				function getPoint(evt){
 					var e = evt.target;
 					var dim = e.getBoundingClientRect();
+					console.log(evt.clientX,evt.clientY, dim);
 					var x = evt.clientX - dim.left;
 					var y = evt.clientY - dim.top;
 					return {x:x,y:y}
