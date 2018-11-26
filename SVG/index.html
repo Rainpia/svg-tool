@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SVG</title>
+</head>
+<body style="margin:0">
+	<div id="container" style="width: 800px;height: 500px;position: relative;">
+		<svg id="mySVG" viewBox="0 0 800 500" style="background: black;width: 800px;height: 500px;">
+			<image  onmouseup='endSelection(evt)' onmousedown='startSelection(evt)' x="0" y="0" xlink:href="./nirc.jpg"  width="800" height="500"/>
+			<script type="text/ecmascript">
+				// global value
+				let rect = null; // box
+				let input = null; // input
+				let startPoint = {x:0,y:0}; // start point
+				let endPoint = {x:0,y:0}; // end point
+				let wid = null; // stuff width
+				let hei = null; // stuff height
+				let infoArr = [];
+	
+				function endSelection(evt) {
+					endPoint = getPoint(evt);
+					// console.log('endPoint', endPoint);
+					
+					// calculate width and height
+					wid = endPoint.x - startPoint.x;
+					hei = endPoint.y - startPoint.y;
+					// console.log('width', wid, 'height', hei);
+
+					// width less than 5 or hei less than 5, ignore
+					if((wid >= 0 && wid < 5) || (hei >= 0 && hei < 5)){
+						return
+					}
+
+					if(wid > 0 || hei > 0){
+						// set box width and height
+						rect.setAttribute ('x', startPoint.x);
+						rect.setAttribute ('y', startPoint.y);
+						rect.setAttribute ('width', wid);
+						rect.setAttribute ('height', hei);
+
+						input.style.left = startPoint.x + 'px';
+						input.style.top = (startPoint.y + hei) + 'px';
+						input.style.display = 'block';
+					}else if(wid < 0 || hei < 0){
+						// set box width and height
+						rect.setAttribute ('x', endPoint.x);
+						rect.setAttribute ('y', endPoint.y);
+						rect.setAttribute ('width', -wid);
+						rect.setAttribute ('height', -hei);
+
+						input.style.left = endPoint.x + 'px';
+						input.style.top = (endPoint.y + (-hei)) + 'px';
+						input.style.display = 'block';
+					}
+					
+
+				}
+				function startSelection(evt) {
+					startPoint = getPoint(evt);
+					// console.log('startPoint', startPoint);
+				}
+				
+				createBoxAndInput();
+				function createBoxAndInput(){
+					// rect
+					const svgns = "http://www.w3.org/2000/svg";
+					rect = document.createElementNS(svgns,'rect');
+					rect.style.opacity = 0.5;
+					rect.style.stroke = 'pink';
+					rect.style.fill = "white";
+					rect.style.strokeWidth = '1';
+					document.getElementById("mySVG").appendChild(rect);
+	
+					// input
+					input = document.createElement('input');
+					input.style.width = '120px';
+					input.style.height = '28px';
+					input.style.border = '1px solid black';
+					input.style.fontSize = '18px';
+					input.style.position = 'absolute';
+					input.style.zIndex = '100';
+					input.style.display = 'none';
+					input.setAttribute('id', 'stuffName');
+					document.getElementById('container').appendChild(input);
+
+					input.addEventListener('keypress',(evt)=>{
+						if(event.keyCode == 13){
+							if(!evt.target.value){
+								clearBoxAndInput(evt);
+								return;
+							}
+							infoArr.push({
+								key: evt.target.value,
+								x: startPoint.x,
+								y: startPoint.y,
+								w: wid,
+								h: hei
+							});
+							
+							console.log('info', infoArr);
+							
+						} 
+					})
+				}
+
+				function clearBoxAndInput(evt){
+					// hide rect
+					rect.setAttribute ('width', 0);
+					rect.setAttribute ('height', 0);
+
+					// hide input
+					input.style.display = 'none';
+					evt.target.value = null;
+				}
+
+				function getPoint(evt){
+					var e = evt.target;
+					var dim = e.getBoundingClientRect();
+					var x = evt.clientX - dim.left;
+					var y = evt.clientY - dim.top;
+					return {x:x,y:y}
+				}
+			
+			</script>
+		</svg> 
+	</div>
+</body>
+</html>
