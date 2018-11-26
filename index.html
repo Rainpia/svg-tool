@@ -50,13 +50,15 @@
 						input.style.display = 'block';
 					}else if(wid < 0 || hei < 0){
 						// set box width and height
-						rect.setAttribute ('x', endPoint.x);
-						rect.setAttribute ('y', endPoint.y);
+						const box_x = endPoint.x + parseInt(image.getAttribute('x'));
+						const box_y = endPoint.y + parseInt(image.getAttribute('y'));
+						rect.setAttribute ('x', box_x);
+						rect.setAttribute ('y', box_y);
 						rect.setAttribute ('width', -wid);
 						rect.setAttribute ('height', -hei);
 
-						input.style.left = endPoint.x + 'px';
-						input.style.top = (endPoint.y + (-hei)) + 'px';
+						input.style.left = box_x + 'px';
+						input.style.top = (box_y + (-hei)) + 'px';
 						input.style.display = 'block';
 					}
 					
@@ -123,7 +125,7 @@
 				function getPoint(evt){
 					var e = evt.target;
 					var dim = e.getBoundingClientRect();
-					console.log(evt.clientX,evt.clientY, dim);
+					// console.log(evt.clientX,evt.clientY, dim);
 					var x = evt.clientX - dim.left;
 					var y = evt.clientY - dim.top;
 					return {x:x,y:y}
