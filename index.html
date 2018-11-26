@@ -31,12 +31,12 @@
 					// console.log('width', wid, 'height', hei);
 
 					// width less than 5 or hei less than 5, ignore
-					if((wid >= 0 && wid < 5) || (hei >= 0 && hei < 5)){
+					if((wid === 0 ) || (hei === 0)){
 						clearBoxAndInput(evt);
 						return
 					}
 
-					if(wid > 0 || hei > 0){
+					if(wid > 0 && hei > 0){
 						// set box width and height
 						const box_x = startPoint.x + parseInt(image.getAttribute('x'));
 						const box_y = startPoint.y + parseInt(image.getAttribute('y'));
@@ -48,10 +48,11 @@
 						input.style.left = box_x + 'px';
 						input.style.top = (box_y + hei + 3) + 'px';
 						input.style.display = 'block';
-					}else if(wid < 0 || hei < 0){
+					}else if(wid < 0 && hei < 0){
 						// set box width and height
 						const box_x = endPoint.x + parseInt(image.getAttribute('x'));
 						const box_y = endPoint.y + parseInt(image.getAttribute('y'));
+						
 						rect.setAttribute ('x', box_x);
 						rect.setAttribute ('y', box_y);
 						rect.setAttribute ('width', -wid);
@@ -98,13 +99,25 @@
 								clearBoxAndInput(evt);
 								return;
 							}
-							infoArr.push({
-								key: evt.target.value,
-								x: startPoint.x,
-								y: startPoint.y,
-								w: wid,
-								h: hei
-							});
+							const dim = document.getElementById("mySVG").getBoundingClientRect();
+							if(wid > 0 && hei > 0){
+								infoArr.push({
+									key: evt.target.value,
+									x: startPoint.x / dim.width,
+									y: startPoint.y / dim.height,
+									w: wid / dim.width ,
+									h: hei / dim.height
+								});
+							}else if(wid < 0 && hei < 0){
+								infoArr.push({
+									key: evt.target.value,
+									x: endPoint.x / dim.width,
+									y: endPoint.y / dim.height,
+									w: wid / dim.width,
+									h: hei / dim.height
+								});
+							}
+							
 							clearBoxAndInput(evt);
 							console.log('info', infoArr);
 							
@@ -125,10 +138,9 @@
 				function getPoint(evt){
 					var e = evt.target;
 					var dim = e.getBoundingClientRect();
-					// console.log(evt.clientX,evt.clientY, dim);
 					var x = evt.clientX - dim.left;
 					var y = evt.clientY - dim.top;
-					return {x:x,y:y}
+					return {x:(x) ,y:(y)}
 				}
 			
 			</script>
